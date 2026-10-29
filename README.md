@@ -1,8 +1,8 @@
 # Daggerheart Stats Importer
 
-An unofficial Foundry VTT module for importing Daggerheart adversary statblocks from plain text.
+An unofficial Foundry VTT module for importing Daggerheart adversary and environment statblocks from plain text.
 
-The module reads the current `Tier <number> <role>` statblock layout, creates adversary actors for the Foundryborne Daggerheart system, and builds feature items with best-effort attack, damage, and effect actions.
+The module reads the current `Tier <number> <role>` statblock layout, creates actors for the Foundryborne Daggerheart system, and builds feature items with best-effort attack, damage, and effect actions.
 
 This module is not affiliated with or endorsed by Darrington Press.
 
@@ -10,7 +10,7 @@ This module is not affiliated with or endorsed by Darrington Press.
 
 - Foundry VTT 13 or 14
 - Daggerheart system 2.0.0 or newer
-- Game Master role to import adversaries
+- Game Master role to import statblocks
 
 ## Installation
 
@@ -43,19 +43,22 @@ Then enable **Daggerheart Stats Importer** in your world's module settings.
 
 1. Open your world as a Game Master.
 2. Open the importer using either:
-   - Token controls → **Import Adversary**
-   - The **Import Adversary** button in the Actors sidebar
+   - Token controls → **Import Statblock**
+   - The **Import Statblock** button in the Actors sidebar
    - The API: `game.modules.get("dh-stat-importer").api.open()`
-3. Paste one or more statblocks into the dialog.
-4. Click **Import**.
+3. Select **Adversary** or **Environment** at the top of the dialog.
+4. Paste one or more statblocks into the dialog.
+5. Click **Import**.
 
 Imported actors are created in the Actors directory. When importing a single statblock, its sheet opens automatically.
 
-## Statblock format
+## Statblock formats
 
-The importer expects the newer plain-text format that starts with a `Tier` line. Older statblock layouts are not supported.
+The importer expects the newer plain-text format that starts with a `Tier` line. Older statblock layouts are not supported. The selected type applies to every statblock in the dialog, so keep adversary and environment imports separate.
 
-### Skeleton
+### Adversary format
+
+#### Skeleton
 
 ```text
 ADVERSARY NAME
@@ -77,7 +80,7 @@ multiple lines.
 
 The only required lines are the adversary name and the `Tier <number> <role>` line. Everything else may be omitted, though missing attributes will be left unset and reported in a warning.
 
-### Fields
+#### Adversary fields
 
 - **Name**: The first non-empty line.
 - **Tier**: Must follow the name and use the form `Tier 1 Solo`, `Tier 2 Bruiser`, `Tier 3 Support`, etc.
@@ -91,7 +94,7 @@ The only required lines are the adversary name and the `Tier <number> <role>` li
 - **Feature values**: Optional values in parentheses are preserved, e.g. `Relentless (3) - Passive: ...`.
 - **Multi-line text**: Descriptions, motives, and feature text may span multiple lines.
 
-### Complete example
+#### Adversary example
 
 ```text
 CRYSTAL WARDEN
@@ -113,7 +116,7 @@ Last Light - Reaction: When the Warden is reduced to 0 Hit Points, it
 bursts in a flash of light.
 ```
 
-### Partial example
+#### Partial adversary example
 
 Missing stats are allowed. The importer creates the actor and warns about which attributes were not provided.
 
@@ -129,9 +132,58 @@ Whispered Doubt - Action: Mark a Stress to force a target within Close
 range to make a Presence Reaction Roll.
 ```
 
+### Environment format
+
+#### Skeleton
+
+```text
+ENVIRONMENT NAME
+Tier <number> <Exploration|Social|Traversal|Event>
+Description text, which may span multiple lines.
+Impulses: Impulse one, impulse two, impulse three
+
+Difficulty: <number>
+Potential adversaries: <group> (<name>, <name>), <group> (<name>, <name>)
+
+FEATURES
+Feature Name - Passive|Action|Reaction: Feature description, which may span
+multiple lines.
+```
+
+The only required lines are the environment name and the `Tier <number> <type>` line. The tier type must be `Exploration`, `Social`, `Traversal`, or `Event`. Missing difficulty is left unset and reported in a warning.
+
+#### Environment fields
+
+- **Impulses**: May continue across multiple lines.
+- **Difficulty**: A single number, such as `Difficulty: 14`.
+- **Potential adversaries**: Comma-separated groups, with adversary names in parentheses. Commas inside parentheses are preserved.
+- **Features**: Uses the same feature syntax as adversary statblocks.
+- **GM prompts**: Question lines that follow a feature are appended to that feature's description.
+- **Potential adversary links**: Groups are imported as unlinked headings in the environment's Potential Adversaries tab. The module does not search for or link matching actors.
+
+#### Environment example
+
+```text
+THE SUNKEN ARCHIVE
+Tier 2 Exploration
+A flooded library where the shelves drift through dark water and
+forgotten wards still hum beneath the silt.
+Impulses: Guard forbidden knowledge, lure intruders, flood corridors
+
+Difficulty: 13
+Potential adversaries: Drowned Scholars (Wight, Wraith), Constructs (Stone Guardian)
+
+FEATURES
+Drowning Silence - Passive: Sound is swallowed by the water. PCs have
+disadvantage on rolls to hear anything beyond Close range.
+Rising Water - Action: Spend a Fear to raise the water level. All targets
+within Close range must make an Agility Reaction Roll or become Restrained.
+What knowledge is worth risking the rising water?
+```
+
 ## Batch import
 
-Separate multiple statblocks with a line containing only `---`:
+Separate multiple statblocks of the selected type with a line containing only `---`:
 
 ```text
 CRYSTAL WARDEN
@@ -144,7 +196,7 @@ Tier 3 Leader
 ...
 ```
 
-Batch import is atomic: every statblock is parsed before any actors are created. If one block is invalid, nothing is imported.
+Batch import is atomic: every statblock is parsed before any actors are created. If one block is invalid, nothing is imported. Adversary and environment blocks cannot be mixed in one batch.
 
 ## Old format
 
@@ -161,6 +213,7 @@ Use the `Tier <number> <role>` format instead.
 ## What gets created
 
 - Adversary actors with tier, role, difficulty, damage thresholds, HP, Stress, motives and tactics, description, experiences, and attack data.
+- Environment actors with tier, type, impulses, difficulty, description, and unlinked potential-adversary groups.
 - Feature items with `Passive`, `Action`, or `Reaction` feature forms.
 - Best-effort feature actions:
   - Attack actions when the feature describes an attack.
@@ -169,7 +222,7 @@ Use the `Tier <number> <role>` format instead.
   - Costs for Fear, Stress, Hope, Armor Slots, and HP are detected when possible.
   - Save traits, ranges, and damage formulas are detected when possible.
 
-Actor roles are mapped to the Daggerheart system's adversary types. Unknown roles fall back to `Standard`.
+Adversary roles are mapped to the Daggerheart system's adversary types. Unknown adversary roles fall back to `Standard`. Environment types must be `Exploration`, `Social`, `Traversal`, or `Event`.
 
 ## API
 
@@ -185,6 +238,14 @@ The API also exposes:
 game.modules.get("dh-stat-importer").api.StatblockParser;
 game.modules.get("dh-stat-importer").api.DaggerheartActorCreator;
 game.modules.get("dh-stat-importer").api.ImportDialog;
+```
+
+Use parser kind `environment` for environment statblocks:
+
+```js
+const Parser = game.modules.get("dh-stat-importer").api.StatblockParser;
+const parser = new Parser({ kind: "environment" });
+const environments = parser.parseAll(text);
 ```
 
 ## Development

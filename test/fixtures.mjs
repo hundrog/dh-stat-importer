@@ -115,6 +115,103 @@ they are trying to calm. On a failure, the dinosaur becomes
 agitated. On a success, they pacify the beast, and they no longer
 have disadvantage on future rolls to use the whistle.`;
 
+export const RED_DEATH_MIST = `RED DEATH MIST
+Tier 2 Traversal
+A crimson mist, slowly creeping and expanding, spreading
+the Red Death on its passage.
+Impulses: Conceal, creep, infect, scare, spread
+Difficulty: 14
+Potential adversaries: Ghosts (Spectral Archer, Spectral
+Captain, Spectral Guardian), any infected adversary (see
+“Contracting the Red Death”)
+FEATURES
+Curse of the Red Death - Passive: The “Red Death” Tier 2 Event is
+active, which includes the rules for the Red Death condition.
+How does the Red Death change the way NPCs live their daily life?
+Creeping Mist - Action: Spend a Fear to tick the “Local Expansion”
+countdown 1d4 times. This action can’t be used again until the
+next roll with Fear.
+What does the mist manage to creep through (clothes, closed doors,
+cracked walls…)?
+Regional Expansion - Action: Long-Term Countdown (6). If the
+“Local Expansion” countdown has been triggered, spend a Fear to
+reveal the mist slowly spreading in the open and start this
+countdown. When it should be ticked, the GM rolls 1d8: the
+countdown only ticks if the GM rolled the countdown number or
+lower, revealing a location being overrun by the mist. When the
+countdown triggers, the mist completely engulfs the closest
+significant town or city and stops spreading.
+Does the mist swallow a place the PCs previously visited, or were
+planning to?
+Virulent Mist - Action: Spend a Fear to infect a PC who is currently
+within the mist while wounded. The PC makes a Strength
+Reaction Roll to avoid Red Death (1).
+Which wound does the mist infect?
+Local Expansion - Reaction: Countdown (Increasing 1). When the
+wearer of the Mask of the Red Death dies, a sinister red mist
+starts to raise from their body. Tick the countdown whenever a PC
+rolls with Fear. The mist expands at each trigger, following this
+progression:
+• (Increasing 1): Very Close range.
+• (Increasing 2): Close range.
+• (Increasing 3): Far range.
+• (Increasing 4): Very Far range.
+• (Increasing 5): entirely fills a building as large as a palace.
+• (Increasing 6): “Local expansion” countdown stops working.
+“Regional Expansion” countdown now available.
+What does the mist look like while emerging from the wounds of the
+wearer of the mask?
+Deadly Mist - Reaction: Any creature entering or touching the mist
+makes a Strength Reaction Roll to avoid contracting Red Death (1).
+How does the mist smell, taste, and feel on its victims?`;
+
+export const SAURIAN_CITY = `SAURIAN CITY
+Tier 1 Social
+A massive city of grand pyramids and temples nestled in the jungles
+of the lost continent. Their life might be more harsh and savage but
+they deal with many of the same issues as most cities.
+Impulses: Impart knowledge, set goals, generate hype for the
+derby
+Difficulty: 11
+Potential Adversaries: Saurians (Warrior, Stablemaster, Rider),
+Dinosaurs (Raptors, Anklysaurus, Pachycephalosaurus), Felons
+(Shady Shopkeep, Thief), Merchant
+FEATURES
+Ask the Locals - Passive: A PC can inquire about major events or
+learn information by making a Knowledge or Presence Roll.
+What they learn depends on the outcome of their roll, based on
+the following criteria:
+• Critical Success: Learn about two major events, information
+or rumors. The PC can ask one follow-up question and get a
+truthful answer.
+• Success with Hope: Learn about an event or information and
+a rumor, at least one of which is relevant to the PC’s
+background.
+• Success with Fear: Learn an alarming rumor about the area.
+• Any Failure: The locals respond poorly to their inquiries. The
+PC can mark a Stress to learn one relevant rumor.
+What intel are the PCs asking about? Who controls the aspects of
+the Racesaurs?
+Calling all Racesaurs - Passive: The Derby occurs every weekend.
+The Race is accepting Racesaurs for the big event to compete for
+the prize. Any PC can enter the Race as long as they have a
+mount. Non-Racesaurs can still help influence the Derby’s
+results.
+What dinosaur mounts do the Players want? How are non-
+participants going to help?
+Pick a Winner! - Passive: There’s a stand set up near the Derby run
+by a shady bookie where PCs can wager up to 3 handfuls of gold
+on who wins the Race. If they win, they receive their original
+wager back plus 1d4 handfuls of gold for every handful they bet.
+What chatter do they overhear about the competition? Who does
+the Party need to look out for?
+Hear All About It! - Reaction: Countdown (Loop 1). Activate the
+countdown when the PCs enter the scene. Every so often, a local
+newsie shouts the most recent headlines about the area or
+region. The Countdown ticks down when the Party takes a rest.
+What hook will get the Party’s attention? How deep does the story
+run?`;
+
 export const OLD_FORMAT = `ACID BURROWER T1 Solo
 A massive insectoid creature that burrows through solid rock.
 Motives & Tactics: Ambush, consume, retreat

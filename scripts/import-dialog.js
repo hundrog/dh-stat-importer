@@ -14,6 +14,9 @@ export class ImportDialog {
     const content = await render(
       `modules/${MODULE_ID}/templates/import-dialog.html`,
       {
+        typeLabel: game.i18n.localize(`${MODULE_ID}.dialog.type`),
+        adversaryLabel: game.i18n.localize(`${MODULE_ID}.dialog.adversary`),
+        environmentLabel: game.i18n.localize(`${MODULE_ID}.dialog.environment`),
         instructions: game.i18n.localize(`${MODULE_ID}.dialog.instructions`),
         placeholder: game.i18n.localize(`${MODULE_ID}.dialog.placeholder`),
         batchHint: game.i18n.localize(`${MODULE_ID}.dialog.batchHint`)
@@ -50,6 +53,8 @@ export class ImportDialog {
   static async _handleImport(button, dialog) {
     const textarea = dialog.element?.querySelector(".statblock-input");
     const text = textarea?.value?.trim();
+    const kind =
+      dialog.element?.querySelector(".import-kind")?.value ?? "adversary";
     if (!text) {
       ui.notifications.warn(game.i18n.localize(`${MODULE_ID}.notifications.empty`));
       return false;
@@ -70,7 +75,7 @@ export class ImportDialog {
 
     try {
       const debug = game.settings.get(MODULE_ID, "debugMode");
-      const parser = new StatblockParser({ debug });
+      const parser = new StatblockParser({ debug, kind });
       let parsedStatblocks;
 
       try {
@@ -140,9 +145,11 @@ export class ImportDialog {
     const codeMap = {
       EMPTY: "empty",
       INVALID_FORMAT: "invalidFormat",
+      INVALID_ENVIRONMENT_TYPE: "invalidEnvironmentType",
       MISSING_NAME: "missingName",
       MISSING_TIER: "missingTier",
-      MULTIPLE_BLOCKS: "multipleBlocks"
+      MULTIPLE_BLOCKS: "multipleBlocks",
+      TYPE_MISMATCH: "typeMismatch"
     };
     const code = codeMap[error.code] ?? "invalidFormat";
     const localizedKey = `${MODULE_ID}.errors.${code}`;

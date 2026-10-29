@@ -1,5 +1,6 @@
 const MODULE_ID = "dh-stat-importer";
 const ACTOR_ICON = "systems/daggerheart/assets/icons/documents/actors/dragon-head.svg";
+const ENVIRONMENT_ICON = "systems/daggerheart/assets/icons/documents/actors/forest.svg";
 const FEATURE_ICON = "systems/daggerheart/assets/icons/documents/items/stars-stack.svg";
 const ATTACK_ICON = "icons/skills/melee/blood-slash-foam-red.webp";
 const KNOWN_ADVERSARY_TYPES = [
@@ -48,6 +49,12 @@ export class DaggerheartActorCreator {
    * @returns {object}
    */
   buildActorData(parsedData) {
+    return parsedData.kind === "environment"
+      ? this.buildEnvironmentActorData(parsedData)
+      : this.buildAdversaryActorData(parsedData);
+  }
+
+  buildAdversaryActorData(parsedData) {
     const system = {
       tier: parsedData.tier,
       type: this._mapRole(parsedData.roleId)
@@ -110,6 +117,64 @@ export class DaggerheartActorCreator {
 
     this._debug("Built actor data", actorData);
     return actorData;
+  }
+
+  /**
+   * Build environment actor source data without creating a Foundry document.
+   * @param {object} parsedData
+   * @returns {object}
+   */
+  buildEnvironmentActorData(parsedData) {
+    const system = {
+      tier: parsedData.tier,
+      type: parsedData.typeId || "exploration"
+    };
+
+    if (parsedData.difficulty !== null) {
+      system.difficulty = parsedData.difficulty;
+    }
+    if (parsedData.impulses) {
+      system.impulses = this._escapeHtml(parsedData.impulses);
+    }
+    if (parsedData.description) {
+      system.description = `<p>${this._escapeHtml(parsedData.description)}</p>`;
+    }
+
+    const potentialAdversaries = this._buildPotentialAdversaries(
+      parsedData.potentialAdversaries
+    );
+    if (Object.keys(potentialAdversaries).length > 0) {
+      system.potentialAdversaries = potentialAdversaries;
+    }
+
+    const actorData = {
+      name: parsedData.name,
+      type: "environment",
+      img: ENVIRONMENT_ICON,
+      system,
+      prototypeToken: {
+        name: parsedData.name,
+        texture: { src: ENVIRONMENT_ICON },
+        disposition: 0
+      },
+      items: this.buildFeatureItems(parsedData),
+      flags: {}
+    };
+
+    this._debug("Built environment actor data", actorData);
+    return actorData;
+  }
+
+  _buildPotentialAdversaries(groups = []) {
+    return Object.fromEntries(
+      groups.map(label => [
+        this._randomId(),
+        {
+          label,
+          adversaries: []
+        }
+      ])
+    );
   }
 
   /**

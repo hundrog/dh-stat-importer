@@ -1,4 +1,11 @@
 <form class="dh-stat-importer-form">
+  <div class="form-group import-kind-group">
+    <label for="dh-stat-importer-kind">{{typeLabel}}</label>
+    <select id="dh-stat-importer-kind" class="import-kind" name="kind">
+      <option value="adversary">{{adversaryLabel}}</option>
+      <option value="environment">{{environmentLabel}}</option>
+    </select>
+  </div>
   <p class="notes">{{instructions}}</p>
   <textarea
     class="statblock-input"

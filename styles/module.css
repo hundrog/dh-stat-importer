@@ -1,12 +1,27 @@
 .dh-stat-importer-dialog .window-content {
-  padding: 0;
+  padding: 1rem;
 }
 
 .dh-stat-importer-form {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 1rem;
+  padding: 12px;
+}
+
+.dh-stat-importer-form .import-kind-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dh-stat-importer-form .import-kind-group label {
+  flex: 0 0 auto;
+  font-weight: bold;
+}
+
+.dh-stat-importer-form .import-kind {
+  flex: 1;
 }
 
 .dh-stat-importer-form .notes,

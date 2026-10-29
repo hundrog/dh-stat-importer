@@ -2,7 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { StatblockParser } from "../scripts/parser.js";
 import { DaggerheartActorCreator } from "../scripts/actor-creator.js";
-import { AGARES, ALEMENTAL, SAURIAN_STABLEMASTER } from "./fixtures.mjs";
+import {
+  AGARES,
+  ALEMENTAL,
+  SAURIAN_STABLEMASTER,
+  RED_DEATH_MIST,
+  SAURIAN_CITY
+} from "./fixtures.mjs";
 
 let idCounter = 0;
 globalThis.foundry = {
@@ -30,6 +36,7 @@ globalThis.CONFIG = {
 };
 
 const parser = new StatblockParser();
+const environmentParser = new StatblockParser({ kind: "environment" });
 const creator = new DaggerheartActorCreator();
 
 test("builds a complete Daggerheart adversary actor", () => {
@@ -74,6 +81,63 @@ test("builds a complete Daggerheart adversary actor", () => {
   const passive = actor.items.find(item => item.name === "Just Beer");
   assert.equal(passive.system.featureForm, "passive");
   assert.deepEqual(passive.system.actions, {});
+});
+
+test("builds an environment actor with unlinked adversary groups", () => {
+  const actor = creator.buildActorData(
+    environmentParser.parse(RED_DEATH_MIST)
+  );
+
+  assert.equal(actor.name, "RED DEATH MIST");
+  assert.equal(actor.type, "environment");
+  assert.equal(actor.img, "systems/daggerheart/assets/icons/documents/actors/forest.svg");
+  assert.equal(actor.system.tier, 2);
+  assert.equal(actor.system.type, "traversal");
+  assert.equal(actor.system.difficulty, 14);
+  assert.equal(actor.system.impulses, "Conceal, creep, infect, scare, spread");
+  assert.match(actor.system.description, /^<p>A crimson mist/);
+  assert.equal(actor.system.damageThresholds, undefined);
+  assert.equal(actor.system.resources, undefined);
+  assert.equal(actor.system.attack, undefined);
+  assert.equal(actor.prototypeToken.disposition, 0);
+  assert.equal(actor.items.length, 6);
+
+  const groups = Object.values(actor.system.potentialAdversaries);
+  assert.equal(groups.length, 2);
+  assert.deepEqual(
+    groups.map(group => group.label),
+    [
+      "Ghosts (Spectral Archer, Spectral Captain, Spectral Guardian)",
+      "any infected adversary (see “Contracting the Red Death”)"
+    ]
+  );
+  assert.deepEqual(groups[0].adversaries, []);
+
+  const creeping = actor.items.find(item => item.name === "Creeping Mist");
+  const action = Object.values(creeping.system.actions)[0];
+  assert.equal(creeping.system.featureForm, "action");
+  assert.equal(action.type, "effect");
+  assert.equal(action.cost[0].key, "fear");
+  assert.equal(action.cost[0].value, 1);
+});
+
+test("builds all environment adversary groups", () => {
+  const actor = creator.buildActorData(environmentParser.parse(SAURIAN_CITY));
+
+  assert.equal(actor.type, "environment");
+  assert.equal(actor.system.type, "social");
+  assert.equal(actor.items.length, 4);
+
+  const groups = Object.values(actor.system.potentialAdversaries);
+  assert.deepEqual(
+    groups.map(group => group.label),
+    [
+      "Saurians (Warrior, Stablemaster, Rider)",
+      "Dinosaurs (Raptors, Anklysaurus, Pachycephalosaurus)",
+      "Felons (Shady Shopkeep, Thief)",
+      "Merchant"
+    ]
+  );
 });
 
 test("builds damage and costs for features", () => {

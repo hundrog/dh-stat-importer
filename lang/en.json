@@ -1,8 +1,11 @@
 {
   "dh-stat-importer": {
     "dialog": {
-      "title": "Import Daggerheart Adversary",
-      "instructions": "Paste one or more Daggerheart adversary statblocks below. Separate multiple statblocks with a line containing only ---.",
+      "title": "Import Daggerheart Statblock",
+      "type": "Statblock Type",
+      "adversary": "Adversary",
+      "environment": "Environment",
+      "instructions": "Choose a statblock type, then paste one or more statblocks below. Separate multiple statblocks with a line containing only ---.",
       "placeholder": "AGARES\nTier 3 Leader\n...",
       "batchHint": "Multiple statblocks are imported together only if every statblock is valid."
     },
@@ -11,7 +14,7 @@
       "close": "Close"
     },
     "controls": {
-      "importStatblock": "Import Adversary"
+      "importStatblock": "Import Statblock"
     },
     "settings": {
       "debugMode": {
@@ -24,17 +27,19 @@
       "parsing": "Parsing statblock...",
       "creating": "Creating actor...",
       "success": "Imported {name}.",
-      "batchSuccess": "Imported {count} adversaries.",
+      "batchSuccess": "Imported {count} statblocks.",
       "missingStats": "{name} was imported, but these stats were missing and left unset: {fields}.",
       "error": "Could not import statblock: {error}",
       "invalidBlock": "Statblock {index} is invalid: {error}"
     },
     "errors": {
       "empty": "The statblock is empty.",
-      "invalidFormat": "The statblock format was not recognized. Use the current adversary format with a 'Tier <number> <role>' line.",
-      "missingName": "Could not find the adversary name.",
+      "invalidFormat": "The statblock format was not recognized. Use a name line followed by a 'Tier <number> <role>' line.",
+      "invalidEnvironmentType": "Environment type not recognized. Use Exploration, Social, Traversal, or Event.",
+      "missingName": "Could not find the statblock name.",
       "missingTier": "Could not find the 'Tier <number> <role>' line.",
-      "multipleBlocks": "Only one statblock can be imported at a time."
+      "multipleBlocks": "Only one statblock can be imported at a time.",
+      "typeMismatch": "The selected statblock type does not match the pasted text."
     },
     "fields": {
       "difficulty": "Difficulty",

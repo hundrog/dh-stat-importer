@@ -5,10 +5,13 @@ import {
   AGARES,
   ALEMENTAL,
   SAURIAN_STABLEMASTER,
+  RED_DEATH_MIST,
+  SAURIAN_CITY,
   OLD_FORMAT
 } from "./fixtures.mjs";
 
 const parser = new StatblockParser();
+const environmentParser = new StatblockParser({ kind: "environment" });
 
 test("parses a partial statblock and reports missing stats", () => {
   const result = parser.parse(AGARES);
@@ -112,6 +115,105 @@ test("parses a batch separated by ---", () => {
   assert.deepEqual(
     results.map(result => result.name),
     ["Agares", "ALEMENTAL", "SAURIAN STABLEMASTER"]
+  );
+});
+
+test("parses an environment with impulses and potential adversaries", () => {
+  const result = environmentParser.parse(RED_DEATH_MIST);
+
+  assert.equal(result.kind, "environment");
+  assert.equal(result.name, "RED DEATH MIST");
+  assert.equal(result.tier, 2);
+  assert.equal(result.role, "Traversal");
+  assert.equal(result.typeId, "traversal");
+  assert.equal(
+    result.description,
+    "A crimson mist, slowly creeping and expanding, spreading the Red Death on its passage."
+  );
+  assert.equal(result.impulses, "Conceal, creep, infect, scare, spread");
+  assert.equal(result.difficulty, 14);
+  assert.deepEqual(result.potentialAdversaries, [
+    "Ghosts (Spectral Archer, Spectral Captain, Spectral Guardian)",
+    "any infected adversary (see “Contracting the Red Death”)"
+  ]);
+  assert.equal(result.features.length, 6);
+  assert.deepEqual(
+    result.features.map(feature => feature.name),
+    [
+      "Curse of the Red Death",
+      "Creeping Mist",
+      "Regional Expansion",
+      "Virulent Mist",
+      "Local Expansion",
+      "Deadly Mist"
+    ]
+  );
+  assert.equal(result.features[1].type, "action");
+  assert.equal(result.features.at(-1).type, "reaction");
+  assert.match(result.features.at(-1).description, /on its victims\?$/);
+  assert.deepEqual(result.missing, []);
+});
+
+test("parses multi-line environment impulses and adversary groups", () => {
+  const result = environmentParser.parse(SAURIAN_CITY);
+
+  assert.equal(result.kind, "environment");
+  assert.equal(result.name, "SAURIAN CITY");
+  assert.equal(result.tier, 1);
+  assert.equal(result.role, "Social");
+  assert.equal(result.typeId, "social");
+  assert.equal(
+    result.impulses,
+    "Impart knowledge, set goals, generate hype for the derby"
+  );
+  assert.equal(result.difficulty, 11);
+  assert.deepEqual(result.potentialAdversaries, [
+    "Saurians (Warrior, Stablemaster, Rider)",
+    "Dinosaurs (Raptors, Anklysaurus, Pachycephalosaurus)",
+    "Felons (Shady Shopkeep, Thief)",
+    "Merchant"
+  ]);
+  assert.equal(result.features.length, 4);
+  assert.deepEqual(result.missing, []);
+});
+
+test("parses an environment batch separated by ---", () => {
+  const results = environmentParser.parseAll(
+    `${RED_DEATH_MIST}\n---\n${SAURIAN_CITY}`
+  );
+
+  assert.equal(results.length, 2);
+  assert.deepEqual(
+    results.map(result => result.name),
+    ["RED DEATH MIST", "SAURIAN CITY"]
+  );
+});
+
+test("reports missing environment difficulty", () => {
+  const result = environmentParser.parse(`A Quiet Shrine
+Tier 1 Exploration
+A forgotten shrine at the edge of the woods.
+Features
+Silence - Passive: The shrine dampens all sound.`);
+
+  assert.equal(result.difficulty, null);
+  assert.deepEqual(result.missing, ["difficulty"]);
+});
+
+test("rejects invalid environment types and mismatched inputs", () => {
+  assert.throws(
+    () => environmentParser.parse(ALEMENTAL),
+    error => error.code === "INVALID_ENVIRONMENT_TYPE"
+  );
+  assert.throws(
+    () => environmentParser.parse(`Testing Grounds
+Tier 1 Social
+ATK: +1 | Slam: Melee | 1d6 phy`),
+    error => error.code === "TYPE_MISMATCH"
+  );
+  assert.throws(
+    () => parser.parse(RED_DEATH_MIST),
+    error => error.code === "TYPE_MISMATCH"
   );
 });
 

@@ -1,5 +1,6 @@
 const BOX_CHARACTERS = /[\u25a1\u2610\u25fb\u25a2]|\[\s*\]/g;
 const FEATURE_TYPES = ["passive", "action", "reaction"];
+const ENVIRONMENT_TYPE_IDS = ["exploration", "social", "traversal", "event"];
 const RANGE_IDS = {
   melee: "melee",
   close: "close",
@@ -19,14 +20,15 @@ export class StatblockParseError extends Error {
 }
 
 /**
- * Parser for the current Daggerheart adversary statblock text format.
+ * Parser for the current Daggerheart adversary and environment statblock formats.
  *
  * The parser intentionally has no Foundry dependencies so it can be tested
  * outside of Foundry VTT.
  */
 export class StatblockParser {
-  constructor({ debug = false } = {}) {
+  constructor({ debug = false, kind = "adversary" } = {}) {
     this.debug = debug;
+    this.kind = kind === "environment" ? "environment" : "adversary";
   }
 
   /**
@@ -87,19 +89,32 @@ export class StatblockParser {
   }
 
   _parseBlock(text) {
-    const lines = text
+    const lines = this._normalizeLines(text);
+    const header = this._parseHeader(lines);
+
+    if (this.kind === "environment") {
+      return this._parseEnvironmentBlock(header);
+    }
+
+    return this._parseAdversaryBlock(header);
+  }
+
+  _normalizeLines(text) {
+    return text
       .replace(/\r\n?/g, "\n")
       .split("\n")
       .map(line => line.replace(/\s+/g, " ").trim())
       .filter(Boolean);
+  }
 
+  _parseHeader(lines) {
     if (lines.length === 0) {
       throw new StatblockParseError("EMPTY", "Please provide a statblock to import.");
     }
 
     const name = lines.shift();
     if (!name) {
-      throw new StatblockParseError("MISSING_NAME", "Could not find the adversary name.");
+      throw new StatblockParseError("MISSING_NAME", "Could not find the statblock name.");
     }
 
     const tierLine = lines.shift();
@@ -119,10 +134,30 @@ export class StatblockParser {
       );
     }
 
-    const role = tierMatch[2].trim();
-    const result = {
+    return {
       name,
       tier: Number.parseInt(tierMatch[1], 10),
+      role: tierMatch[2].trim(),
+      lines
+    };
+  }
+
+  _parseAdversaryBlock({ name, tier, role, lines }) {
+    if (
+      lines.some(line =>
+        /^(?:Impulses|Potential\s+Adversar(?:y|ies))\s*:/i.test(line)
+      )
+    ) {
+      throw new StatblockParseError(
+        "TYPE_MISMATCH",
+        "This looks like an environment. Select Environment and try again."
+      );
+    }
+
+    const result = {
+      kind: "adversary",
+      name,
+      tier,
       role,
       roleId: this._normalizeRole(role),
       description: "",
@@ -223,6 +258,171 @@ export class StatblockParser {
     result.missing = this._getMissingFields(result);
     this._debug("Parsed statblock", result);
     return result;
+  }
+
+  _parseEnvironmentBlock({ name, tier, role, lines }) {
+    const typeId = this._normalizeEnvironmentType(role);
+    if (!typeId) {
+      throw new StatblockParseError(
+        "INVALID_ENVIRONMENT_TYPE",
+        "Environment type not recognized. Use Exploration, Social, Traversal, or Event.",
+        { line: role }
+      );
+    }
+
+    if (
+      lines.some(line =>
+        /^(?:ATK|Thresholds?|HP|Stress|Experience|Motives\s*&\s*Tactics)\s*:/i.test(
+          line
+        )
+      )
+    ) {
+      throw new StatblockParseError(
+        "TYPE_MISMATCH",
+        "This looks like an adversary. Select Adversary and try again."
+      );
+    }
+
+    const result = {
+      kind: "environment",
+      name,
+      tier,
+      role,
+      typeId,
+      description: "",
+      impulses: "",
+      difficulty: null,
+      potentialAdversaries: [],
+      features: [],
+      missing: []
+    };
+
+    let state = "description";
+    let currentFeature = null;
+    let potentialAdversariesText = "";
+
+    const saveFeature = () => {
+      if (!currentFeature) return;
+      currentFeature.description = currentFeature.description.trim();
+      result.features.push(currentFeature);
+      currentFeature = null;
+    };
+
+    const appendText = (target, line) => {
+      if (!target) return;
+      result[target] = result[target] ? `${result[target]} ${line}` : line;
+    };
+
+    for (const line of lines) {
+      const featureHeader = this._parseFeatureHeader(line);
+      if (featureHeader) {
+        saveFeature();
+        currentFeature = featureHeader;
+        state = "features";
+        continue;
+      }
+
+      if (/^Features?$/i.test(line)) {
+        saveFeature();
+        state = "features";
+        continue;
+      }
+
+      const impulsesMatch = line.match(/^Impulses\s*:\s*(.*)$/i);
+      if (impulsesMatch) {
+        state = "impulses";
+        if (impulsesMatch[1].trim()) appendText("impulses", impulsesMatch[1].trim());
+        continue;
+      }
+
+      const adversariesMatch = line.match(
+        /^Potential\s+Adversar(?:y|ies)\s*:\s*(.*)$/i
+      );
+      if (adversariesMatch) {
+        state = "potentialAdversaries";
+        if (adversariesMatch[1].trim()) {
+          potentialAdversariesText = potentialAdversariesText
+            ? `${potentialAdversariesText} ${adversariesMatch[1].trim()}`
+            : adversariesMatch[1].trim();
+        }
+        continue;
+      }
+
+      const difficultyMatch = line.match(/^Difficulty\s*:\s*(\d+)/i);
+      if (difficultyMatch) {
+        result.difficulty = Number.parseInt(difficultyMatch[1], 10);
+        state = "body";
+        continue;
+      }
+
+      if (state === "description") {
+        appendText("description", line);
+      } else if (state === "impulses") {
+        appendText("impulses", line);
+      } else if (state === "potentialAdversaries") {
+        potentialAdversariesText = potentialAdversariesText
+          ? `${potentialAdversariesText} ${line}`
+          : line;
+      } else if (state === "features" && currentFeature) {
+        currentFeature.description = currentFeature.description
+          ? `${currentFeature.description} ${line}`
+          : line;
+      }
+    }
+
+    if (state === "features") saveFeature();
+
+    result.potentialAdversaries = this._splitPotentialAdversaries(
+      potentialAdversariesText
+    );
+    result.missing = result.difficulty === null ? ["difficulty"] : [];
+    this._debug("Parsed environment statblock", result);
+    return result;
+  }
+
+  _splitPotentialAdversaries(text) {
+    if (!text.trim()) return [];
+
+    const groups = [];
+    let current = "";
+    let depth = 0;
+    let quote = null;
+
+    for (const character of text) {
+      if (quote) {
+        current += character;
+        if (
+          (quote === '"' && character === '"') ||
+          (quote === "\u201c" && character === "\u201d")
+        ) {
+          quote = null;
+        }
+        continue;
+      }
+
+      if (character === '"' || character === "\u201c") {
+        quote = character;
+        current += character;
+        continue;
+      }
+
+      if (character === "(") {
+        depth += 1;
+      } else if (character === ")" && depth > 0) {
+        depth -= 1;
+      } else if (character === "," && depth === 0) {
+        const group = current.trim();
+        if (group) groups.push(group);
+        current = "";
+        continue;
+      }
+
+      current += character;
+    }
+
+    const group = current.trim();
+    if (group) groups.push(group);
+    return groups;
   }
 
   _parseStatsLine(line, result) {
@@ -372,6 +572,11 @@ export class StatblockParser {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "")
       .trim();
+  }
+
+  _normalizeEnvironmentType(role) {
+    const normalized = this._normalizeRole(role);
+    return ENVIRONMENT_TYPE_IDS.includes(normalized) ? normalized : null;
   }
 
   _normalizeRange(range) {

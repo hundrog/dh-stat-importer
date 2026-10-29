@@ -1,7 +1,7 @@
 {
   "id": "dh-stat-importer",
-  "title": "Daggerheart Stats Importer",
-  "description": "A module to import adversary statblocks from text",
+  "title": "Daggerheart: Stats Importer",
+  "description": "Import Daggerheart adversary and environment statblocks from plain text",
   "authors": [
     {
       "name": "Hundrog"
