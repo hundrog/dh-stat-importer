@@ -1,0 +1,47 @@
+{
+  "dh-stat-importer": {
+    "dialog": {
+      "title": "Import Daggerheart Adversary",
+      "instructions": "Paste one or more Daggerheart adversary statblocks below. Separate multiple statblocks with a line containing only ---.",
+      "placeholder": "AGARES\nTier 3 Leader\n...",
+      "batchHint": "Multiple statblocks are imported together only if every statblock is valid."
+    },
+    "button": {
+      "import": "Import",
+      "close": "Close"
+    },
+    "controls": {
+      "importStatblock": "Import Adversary"
+    },
+    "settings": {
+      "debugMode": {
+        "name": "Debug Mode",
+        "hint": "Log parser and actor creation details to the browser console."
+      }
+    },
+    "notifications": {
+      "empty": "Paste at least one statblock before importing.",
+      "parsing": "Parsing statblock...",
+      "creating": "Creating actor...",
+      "success": "Imported {name}.",
+      "batchSuccess": "Imported {count} adversaries.",
+      "missingStats": "{name} was imported, but these stats were missing and left unset: {fields}.",
+      "error": "Could not import statblock: {error}",
+      "invalidBlock": "Statblock {index} is invalid: {error}"
+    },
+    "errors": {
+      "empty": "The statblock is empty.",
+      "invalidFormat": "The statblock format was not recognized. Use the current adversary format with a 'Tier <number> <role>' line.",
+      "missingName": "Could not find the adversary name.",
+      "missingTier": "Could not find the 'Tier <number> <role>' line.",
+      "multipleBlocks": "Only one statblock can be imported at a time."
+    },
+    "fields": {
+      "difficulty": "Difficulty",
+      "thresholds": "Damage Thresholds",
+      "hitPoints": "Hit Points",
+      "stress": "Stress",
+      "attack": "Attack"
+    }
+  }
+}

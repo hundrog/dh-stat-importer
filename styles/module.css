@@ -1,0 +1,33 @@
+.dh-stat-importer-dialog .window-content {
+  padding: 0;
+}
+
+.dh-stat-importer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.dh-stat-importer-form .notes,
+.dh-stat-importer-form .hint {
+  margin: 0;
+  color: var(--color-text-secondary, #aaa);
+}
+
+.dh-stat-importer-form .statblock-input {
+  width: 100%;
+  min-height: 18rem;
+  resize: vertical;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.dh-stat-importer-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
