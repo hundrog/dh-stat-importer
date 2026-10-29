@@ -130,7 +130,7 @@ export class ImportDialog {
 
       return true;
     } catch (error) {
-      console.error("DH Stats Importer | Import failed", error);
+      console.error("Daggerheart Statblock Importer | Import failed", error);
       ui.notifications.error(this._formatError(error));
       return false;
     } finally {

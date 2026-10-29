@@ -1,4 +1,4 @@
-# Daggerheart Stats Importer
+# Daggerheart: Statblock Importer
 
 An unofficial Foundry VTT module for importing Daggerheart adversary and environment statblocks from plain text.
 
@@ -33,11 +33,11 @@ FoundryVTT/Data/modules/dh-stat-importer
 For local development, a symlink works too:
 
 ```bash
-ln -s /path/to/dh-adversary-importer \
+ln -s /path/to/dh-stat-importer \
   /path/to/FoundryVTT/Data/modules/dh-stat-importer
 ```
 
-Then enable **Daggerheart Stats Importer** in your world's module settings.
+Then enable **Daggerheart: Statblock Importer** in your world's module settings.
 
 ## Usage
 
@@ -54,7 +54,7 @@ Imported actors are created in the Actors directory. When importing a single sta
 
 ## Statblock formats
 
-The importer expects the newer plain-text format that starts with a `Tier` line. Older statblock layouts are not supported. The selected type applies to every statblock in the dialog, so keep adversary and environment imports separate.
+The importer expects the newer plain-text format that starts with a `Tier` line. Other statblock layouts are not supported. The selected type applies to every statblock in the dialog, so keep adversary and environment imports separate.
 
 ### Adversary format
 
@@ -78,7 +78,7 @@ Feature Name - Passive|Action|Reaction: Feature description, which may span
 multiple lines.
 ```
 
-The only required lines are the adversary name and the `Tier <number> <role>` line. Everything else may be omitted, though missing attributes will be left unset and reported in a warning.
+The only required lines are the adversary name and the `Tier <number> <role>` line. Everything else may be omitted, though missing attributes will be left unset and reported in a warning except for the HP and Stress Squares which will be populated using the text from above.
 
 #### Adversary fields
 
@@ -97,23 +97,18 @@ The only required lines are the adversary name and the `Tier <number> <role>` li
 #### Adversary example
 
 ```text
-CRYSTAL WARDEN
-Tier 2 Bruiser
-A humming guardian made of translucent stone, bound to protect
-the ruined grove.
-Motives & Tactics: Guard the grove, shatter intruders, rebuild
-
-Difficulty: 13 | Thresholds: 7/14 | HP: 6 | Stress: 3
-ATK: +3 | Crystal Slam: Melee | 1d10+2 phy
-Experience: Ancient Guardian +2, Rooted +2
-
-Features
-Crystal Skin - Passive: The Warden has resistance to physical damage
-while standing on stone.
-Shatter - Action: Spend a Fear to make an attack against all targets
-within Very Close range, dealing 2d6 mag damage.
-Last Light - Reaction: When the Warden is reduced to 0 Hit Points, it
-bursts in a flash of light.
+JAGGED KNIFE BANDIT
+Tier 1 Standard
+A cunning criminal in a cloak bearing one of the gang’s iconic knives.
+Motives & Tactics: Escape, profit, steal, throw smoke
+Difficulty: 12 | Thresholds: 8/14 | HP: 5 | Stress: 3
+ATK: +1 | Daggers: Melee | 1d8+1 phy
+Experience: Thief +2
+FEATURES
+Climber - Passive: The Bandit climbs just as easily as they run.
+From Above - Passive: When the Bandit succeeds on a standard
+attack from above a target, they deal 1d10+1 physical damage
+instead of their standard damage.
 ```
 
 #### Partial adversary example
@@ -121,15 +116,22 @@ bursts in a flash of light.
 Missing stats are allowed. The importer creates the actor and warns about which attributes were not provided.
 
 ```text
-THE HOLLOW WITNESS
-Tier 3 Leader
-A faceless figure that watches from the edge of every gathering.
-Motives & Tactics: Observe, divide, reveal secrets
+JAGGED KNIFE LIEUTENANT
+Tier 1 Leader
+A seasoned bandit in quality leathers with a strong voice and
+cunning eyes.
+Motives & Tactics: Bully, command, profit, reinforce
 
 Features
-Unblinking - Passive: The Witness cannot be surprised.
-Whispered Doubt - Action: Mark a Stress to force a target within Close
-range to make a Presence Reaction Roll.
+Tactician - Action: When you spotlight the Lieutenant, mark a
+Stress to also spotlight two allies within Close range.
+More Where That Came From - Action: Summon three Jagged Knife
+Lackeys, who appear at Far range.
+Coup de Grace - Action: Spend a Fear to make an attack against a
+Vulnerable target within Close range. On a success, deal 2d6+12
+physical damage and the target must mark a Stress.
+Momentum - Reaction: When the Lieutenant makes a successful
+attack against a PC, you gain a Fear
 ```
 
 ### Environment format
@@ -164,21 +166,22 @@ The only required lines are the environment name and the `Tier <number> <type>` 
 #### Environment example
 
 ```text
-THE SUNKEN ARCHIVE
-Tier 2 Exploration
-A flooded library where the shelves drift through dark water and
-forgotten wards still hum beneath the silt.
-Impulses: Guard forbidden knowledge, lure intruders, flood corridors
-
-Difficulty: 13
-Potential adversaries: Drowned Scholars (Wight, Wraith), Constructs (Stone Guardian)
-
+AMBUSHERS
+Tier 1 Event
+An ambush is set by the PCs to catch unsuspecting adversaries
+off-guard.
+Impulses: Escape, group up, protect the most vulnerable
+Difficulty: Special (see “Relative Strength”)
+Potential Adversaries: Any
 FEATURES
-Drowning Silence - Passive: Sound is swallowed by the water. PCs have
-disadvantage on rolls to hear anything beyond Close range.
-Rising Water - Action: Spend a Fear to raise the water level. All targets
-within Close range must make an Agility Reaction Roll or become Restrained.
-What knowledge is worth risking the rising water?
+Relative Strength - Passive: The Difficulty of this environment
+equals that of the adversary with the highest Difficulty.
+Which adversary is the least prepared? Which one is the most?
+Where Did They Come From? - Reaction: When a PC starts the
+ambush on unsuspecting adversaries, you lose 2 Fear and the
+first attack roll a PC makes has advantage.
+What are the adversaries in the middle of doing when the ambush
+starts? How does this impact their approach to the fight?
 ```
 
 ## Batch import
@@ -186,29 +189,17 @@ What knowledge is worth risking the rising water?
 Separate multiple statblocks of the selected type with a line containing only `---`:
 
 ```text
-CRYSTAL WARDEN
-Tier 2 Bruiser
+APPRENTICE ASSASSIN
+Tier 2 Minion
 ...
 
 ---
-THE HOLLOW WITNESS
-Tier 3 Leader
+ADULT FLICKERFLY
+Tier 3 Solo
 ...
 ```
 
 Batch import is atomic: every statblock is parsed before any actors are created. If one block is invalid, nothing is imported. Adversary and environment blocks cannot be mixed in one batch.
-
-## Old format
-
-Statblocks using the previous layout are rejected. For example, this is **not** supported:
-
-```text
-ACID BURROWER T1 Solo
-Difficulty: 14
-Attack: +3
-```
-
-Use the `Tier <number> <role>` format instead.
 
 ## What gets created
 

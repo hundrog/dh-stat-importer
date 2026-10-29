@@ -598,6 +598,6 @@ export class StatblockParser {
   }
 
   _debug(message, data) {
-    if (this.debug) console.debug(`DH Stats Importer | ${message}`, data);
+    if (this.debug) console.debug(`Daggerheart Statblock Importer | ${message}`, data);
   }
 }

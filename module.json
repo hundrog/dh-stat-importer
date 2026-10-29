@@ -1,6 +1,6 @@
 {
   "id": "dh-stat-importer",
-  "title": "Daggerheart: Stats Importer",
+  "title": "Daggerheart: Statblock Importer",
   "description": "Import Daggerheart adversary and environment statblocks from plain text",
   "authors": [
     {

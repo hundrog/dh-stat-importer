@@ -78,5 +78,5 @@ Hooks.on("renderActorDirectory", (app, html) => {
 });
 
 Hooks.once("ready", () => {
-  console.log("DH Stats Importer | Ready");
+  console.log("Daggerheart Statblock Importer | Ready");
 });
