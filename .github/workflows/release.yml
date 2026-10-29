@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "[0-9]*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate release version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MODULE_VERSION="$(jq -r '.version' module.json)"
+          PACKAGE_VERSION="$(jq -r '.version' package.json)"
+
+          echo "Tag version:     ${TAG_VERSION}"
+          echo "module.json:     ${MODULE_VERSION}"
+          echo "package.json:    ${PACKAGE_VERSION}"
+
+          if [[ "${TAG_VERSION}" != "${MODULE_VERSION}" ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match module.json version ${MODULE_VERSION}"
+            exit 1
+          fi
+
+          if [[ "${TAG_VERSION}" != "${PACKAGE_VERSION}" ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json version ${PACKAGE_VERSION}"
+            exit 1
+          fi
+
+      - name: Build release artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -rf build
+          mkdir -p build
+
+          cp -R module.json scripts styles templates lang README.md build/
+
+          DOWNLOAD_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/dh-stat-importer.zip"
+          jq --arg url "${DOWNLOAD_URL}" '.download = $url' module.json > build/module.json
+
+          (
+            cd build
+            zip -r ../dh-stat-importer.zip .
+          )
+
+          unzip -l dh-stat-importer.zip
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          body: |
+            ## Install in Foundry VTT
+
+            Use this manifest URL:
+
+            ```text
+            https://github.com/${{ github.repository }}/releases/latest/download/module.json
+            ```
+          files: |
+            build/module.json
+            dh-stat-importer.zip
