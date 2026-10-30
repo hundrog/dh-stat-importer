@@ -33,11 +33,20 @@ export class DaggerheartActorCreator {
    * @returns {Promise<Actor>}
    */
   async createActor(parsedData) {
+    const actorData = this.buildActorData(parsedData);
+    return this.createActorData(actorData);
+  }
+
+  /**
+   * Create a Foundry actor from pre-built source data.
+   * @param {object} actorData
+   * @returns {Promise<Actor>}
+   */
+  async createActorData(actorData) {
     if (globalThis.game?.system?.id !== "daggerheart") {
       throw new Error("This module requires the Daggerheart system.");
     }
 
-    const actorData = this.buildActorData(parsedData);
     const actor = await Actor.create(actorData);
     this._debug("Created actor", actor);
     return actor;
@@ -214,7 +223,7 @@ export class DaggerheartActorCreator {
         type: "attack",
         trait: null,
         difficulty: null,
-        bonus: attack.bonus ?? 0,
+        bonus: attack.bonus ?? null,
         advState: "neutral",
         diceRolling: {
           multiplier: "prof",
@@ -332,7 +341,7 @@ export class DaggerheartActorCreator {
       cost: costs,
       uses: {
         value: 0,
-        max: feature.value || "",
+        max: feature.value ?? null,
         recovery: null,
         consumeOnSuccess: false
       },

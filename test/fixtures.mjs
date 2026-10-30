@@ -13,7 +13,7 @@ companions: an infernal hawk and an infernal crocodile mount
 (Giant Eagle and Bear stat blocks) that enable Agares to use
 certain features. When Agares is spotlighted, spend a Fear to also
 spotlight one infernal companions, or spend 2 Fear for the two of
-them. They use Agares Difculty, Threshold, and standard attack.
+them. They use Agares' Difficulty, Threshold, and standard attack.
 Hawk Pursuing - Action: Spend 2 Fear to send the hawk towards a
 target Agares can see within Very Far range. Make a standard
 attack with advantage against the target. On a success, the target
@@ -22,7 +22,7 @@ they succeed on an Instinct Roll (20) and spend 2 Hope on a
 success. If the attack fails, Agares’ resolve intensifes and you gain
 1d4 Fear.
 Infernal Pact - Action: Propose a pact to a PC, ofering one of
-Agares’s Dark Blessing or something else within their portiolio or
+Agares’s Dark Blessing or something else within their portfolio or
 powers. If the PC accepts, mark a Stress. The PC is Vulnerable
 against Agares while the pact stands.
 Mockery of Dignity - Action: Mark a Stress to speak words of
@@ -45,7 +45,7 @@ succeeds on a standard attack against a target within Melee, you
 can spend a Fear to clamp the opponent in the crocodile’s jaws,
 making the target temporarily Restrained and Vulnerable until
 they break free with a successful Strength Roll.
-Tail Whip - Reaction: When a PC within Close range of Amon’s
+Tail Whip - Reaction: When a PC within Close range of Agares’
 crocodile rolls with Fear, roll a d6. On a 3 or lower, the crocodile
 makes a standard attack against a target within Close range,
 dealing 1d20 physical damage and making the target Vulnerable
@@ -60,10 +60,10 @@ ATK: +2 | Foamy Wave: Very Close | 1d6+2 phy
 Experience: Be Ale +3
 FEATURES
 Just Beer - Passive: Before they make their first attack in a
-fight or atter they become Hidden, the Alemental is
+fight or at the they become Hidden, the Alemental is
 indistinguishable from a pool of beer until they next act or
 a PC succeeds on an Instinct Roll to identify them.
-Make Drunk - Passive: Atter making a successful attack, you
+Make Drunk - Passive: After making a successful attack, you
 can mark a Stress to make the PC Drunk until their next
 rest. If a Drunk PC rolls a 6 or higher on their Fear Die, it
 becomes a roll with Fear (regardless of the result of the

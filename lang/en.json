@@ -30,7 +30,8 @@
       "batchSuccess": "Imported {count} statblocks.",
       "missingStats": "{name} was imported, but these stats were missing and left unset: {fields}.",
       "error": "Could not import statblock: {error}",
-      "invalidBlock": "Statblock {index} is invalid: {error}"
+      "invalidBlock": "Statblock {index} is invalid: {error}",
+      "creationError": "Could not create the actor. Check the browser console for details."
     },
     "errors": {
       "empty": "The statblock is empty.",
@@ -38,7 +39,6 @@
       "invalidEnvironmentType": "Environment type not recognized. Use Exploration, Social, Traversal, or Event.",
       "missingName": "Could not find the statblock name.",
       "missingTier": "Could not find the 'Tier <number> <role>' line.",
-      "multipleBlocks": "Only one statblock can be imported at a time.",
       "typeMismatch": "The selected statblock type does not match the pasted text."
     },
     "fields": {

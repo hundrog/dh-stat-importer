@@ -81,7 +81,7 @@ export class ImportDialog {
       try {
         parsedStatblocks = parser.parseAll(text);
       } catch (error) {
-        ui.notifications.error(this._formatError(error));
+        ui.notifications.error(this._formatParseError(error));
         return false;
       }
 
@@ -94,8 +94,13 @@ export class ImportDialog {
         )}`;
       }
 
-      for (const parsed of parsedStatblocks) {
-        const actor = await creator.createActor(parsed);
+      const builtStatblocks = parsedStatblocks.map(parsed => ({
+        parsed,
+        actorData: creator.buildActorData(parsed)
+      }));
+
+      for (const { parsed, actorData } of builtStatblocks) {
+        const actor = await creator.createActorData(actorData);
         created.push(actor);
 
         if (parsed.missing?.length > 0) {
@@ -130,8 +135,8 @@ export class ImportDialog {
 
       return true;
     } catch (error) {
-      console.error("Daggerheart Statblock Importer | Import failed", error);
-      ui.notifications.error(this._formatError(error));
+      console.error("Daggerheart Statblock Importer | Actor creation failed", error);
+      ui.notifications.error(game.i18n.localize(`${MODULE_ID}.notifications.creationError`));
       return false;
     } finally {
       if (importButton) {
@@ -141,14 +146,13 @@ export class ImportDialog {
     }
   }
 
-  static _formatError(error) {
+  static _formatParseError(error) {
     const codeMap = {
       EMPTY: "empty",
       INVALID_FORMAT: "invalidFormat",
       INVALID_ENVIRONMENT_TYPE: "invalidEnvironmentType",
       MISSING_NAME: "missingName",
       MISSING_TIER: "missingTier",
-      MULTIPLE_BLOCKS: "multipleBlocks",
       TYPE_MISMATCH: "typeMismatch"
     };
     const code = codeMap[error.code] ?? "invalidFormat";
