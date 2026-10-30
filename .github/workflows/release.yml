@@ -89,3 +89,49 @@ jobs:
           files: |
             build/module.json
             dh-stat-importer.zip
+
+      - name: Notify Foundry VTT
+        shell: bash
+        env:
+          FOUNDRY_API_TOKEN: ${{ secrets.FOUNDRY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MIN_VERSION=$(jq -r '.compatibility.minimum' module.json)
+          VERIFIED_VERSION=$(jq -r '.compatibility.verified' module.json)
+
+          MANIFEST_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/module.json"
+          NOTES_URL="https://github.com/${GITHUB_REPOSITORY}/releases/tag/${GITHUB_REF_NAME}"
+
+          echo "Notifying Foundry VTT..."
+          echo "Version: ${TAG_VERSION}"
+          echo "Manifest: ${MANIFEST_URL}"
+          echo "Notes: ${NOTES_URL}"
+
+          payload=$(jq -n \
+            --arg id "$(jq -r '.id' module.json)" \
+            --arg ver "$TAG_VERSION" \
+            --arg manifest "$MANIFEST_URL" \
+            --arg notes "$NOTES_URL" \
+            --arg min "$MIN_VERSION" \
+            --arg verified "$VERIFIED_VERSION" \
+            '{
+              id: $id,
+              "dry-run": false,
+              release: {
+                version: $ver,
+                manifest: $manifest,
+                notes: $notes,
+                compatibility: {
+                  minimum: $min,
+                  verified: $verified,
+                  maximum: ""
+                }
+              }
+            }')
+
+          curl -X POST "https://foundryvtt.com/_api/packages/release_version/" \
+               -H "Content-Type: application/json" \
+               -H "Authorization: ${FOUNDRY_API_TOKEN}" \
+               -d "$payload"
