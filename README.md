@@ -246,3 +246,24 @@ No build step is required. Run the tests with:
 ```bash
 npm test
 ```
+
+## AI Usage Disclosure
+
+AI tools were used during the development of this project, including assistance with code generation, implementation, and code review.
+
+All AI-assisted work was performed under human supervision. The project owner reviewed, validated, and tested the generated contributions to ensure they meet the project's requirements and quality standards.
+
+AI was used as a development aid, while all final decisions, integrations, and responsibility for the project remain with the human developer.
+
+## Disclaimer
+Daggerheart is a trademark of Darrington Press LLC. All original content, mechanics, and intellectual property related to the Daggerheart roleplaying game are © Darrington Press LLC.
+
+This project is intended for personal or non-commercial use. All rights to Daggerheart’s original materials remain with their respective owners.
+
+This project is an unofficial fan creation and is not affiliated with or endorsed by Darrington Press or Critical Role.
+
+## Sponsor this project
+
+If you find this module useful, please consider supporting its development with a donation. Every little bit helps!
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4O129PV8Y)
