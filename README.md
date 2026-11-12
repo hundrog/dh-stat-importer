@@ -255,12 +255,14 @@ All AI-assisted work was performed under human supervision. The project owner re
 
 AI was used as a development aid, while all final decisions, integrations, and responsibility for the project remain with the human developer.
 
-## Disclaimer
-Daggerheart is a trademark of Darrington Press LLC. All original content, mechanics, and intellectual property related to the Daggerheart roleplaying game are © Darrington Press LLC.
+## Disclaimer / Legal Notice
 
-This project is intended for personal or non-commercial use. All rights to Daggerheart’s original materials remain with their respective owners.
+This tool/project is an unofficial fan creation. It is **not** affiliated, endorsed, sponsored, or otherwise approved by **Darrington Press, LLC** or **Critical Role, LLC**.
 
-This project is an unofficial fan creation and is not affiliated with or endorsed by Darrington Press or Critical Role.
+- **Trademarks & IP:** Daggerheart™ and all associated names, marks, and logos are trademarks of Darrington Press, LLC. All original content, mechanics, and game materials are © Darrington Press, LLC.
+- **Scope of Use:** This project is intended strictly for personal, non-commercial use in private game sessions. 
+- **Virtual Tabletop (VTT) & Distribution Notice:** Users are reminded that sharing or monetizing Public Game Content or Adaptive Content on Virtual Tabletop (VTT) platforms is subject to the strict limitations of the **Darrington Press Community Gaming License (DPCGL)** and requires the use of whitelisted platforms solely for non-commercial purposes.
+- **User Responsibility:** The author of this tool does not claim ownership over Darrington Press intellectual property. Users are solely responsible for ensuring that any homebrew content, stats, or files they choose to import, manage, or share through this tool comply with applicable copyright laws and the terms of the DPCGL.
 
 ## Sponsor this project
 
